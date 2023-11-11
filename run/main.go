@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tae2089/gin-boilerplate/common/config"
 	"github.com/tae2089/gin-boilerplate/common/router"
@@ -27,8 +28,19 @@ func main() {
 	router.SetupRouter(e, db)
 	// e.Run()
 
+	cors.DefaultConfig()
+
+	e.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":8081",
 		Handler: e,
 	}
 
