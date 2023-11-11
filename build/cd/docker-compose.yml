@@ -13,3 +13,29 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
       - ${DB_PORT}:5432
+  server:
+    image: tae2089/gin-bolier:latest
+    container_name: gin-bolier
+    restart: always
+    environment:
+      APP_ENV: container
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: postgres
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
+      PUBLIC_KEY_PATH: ${PUBLIC_KEY_PATH}
+      JWT_SIGNING_METHOD: ${JWT_SIGNING_METHOD}
+    volumes:
+      - ${PWD}/build/cd/postgres-data:/var/lib/postgresql/data
+      - ${PWD}/jwt:/app/secrets/jwt
+      - ${PWD}/jwt.pub:/app/secrets/jwt.pub
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080

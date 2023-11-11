@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"os"
 	"path"
 	"runtime"
 
@@ -16,11 +17,13 @@ func init() {
 	logger.Info("initializing config")
 	projectDir := getProjectDir()
 	fmt.Println("loading.env file")
-	err := godotenv.Load(projectDir + "/.env")
-	if err != nil {
-		log.Panic("Error loading.env file")
+	if os.Getenv("APP_ENV") != "container" {
+		err := godotenv.Load(projectDir + "/.env")
+		if err != nil {
+			log.Panic("Error loading.env file")
+		}
+		logger.Info("initalized config")
 	}
-	logger.Info("initalized config")
 }
 
 func getProjectDir() string {
