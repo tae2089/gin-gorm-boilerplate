@@ -9,30 +9,21 @@ import (
 	"gorm.io/gorm"
 )
 
-var client *gorm.DB
+func NewDBConfig() *gorm.DB {
+	logger.Info("initializing database")
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Seoul",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PORT"),
+	)
 
-func LoadDBConfig() ConfigOption {
-	return func() {
-		if client == nil {
-			logger.Info("initializing database")
-			dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Seoul",
-				os.Getenv("DB_HOST"),
-				os.Getenv("DB_USER"),
-				os.Getenv("DB_PASSWORD"),
-				os.Getenv("DB_NAME"),
-				os.Getenv("DB_PORT"),
-			)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-			db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-			client = db
-			if err != nil {
-				panic(err)
-			}
-			logger.Info("initialized database")
-		}
+	if err != nil {
+		panic(err)
 	}
-}
-
-func GetDB() *gorm.DB {
-	return client
+	logger.Info("initialized database")
+	return db
 }

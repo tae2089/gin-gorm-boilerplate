@@ -32,15 +32,3 @@ func getProjectDir() string {
 	projectDir = path.Join(path.Dir(filename), "../../")
 	return projectDir
 }
-
-func LoadingDefaultConfigOptions() {
-	for _, option := range []ConfigOption{LoadDBConfig(), LoadJwtConfig()} {
-		option()
-	}
-}
-
-func LoadingConfigOptions(options ...ConfigOption) {
-	for _, option := range options {
-		option()
-	}
-}

@@ -11,49 +11,41 @@ import (
 	"github.com/tae2089/gin-boilerplate/common/domain"
 )
 
-var (
-	jwtKey domain.JwtKey
-)
+func NewJwtKey() domain.JwtKey {
+	var jwtKey domain.JwtKey
+	logger.Info("initializing jwt")
+	privateKeyPath := os.Getenv("PRIVATE_KEY_PATH")
+	publicKeyPath := os.Getenv("PUBLIC_KEY_PATH")
 
-func LoadJwtConfig() ConfigOption {
-	return func() {
-		logger.Info("initializing jwt")
-		privateKeyPath := os.Getenv("PRIVATE_KEY_PATH")
-		publicKeyPath := os.Getenv("PUBLIC_KEY_PATH")
-
-		privateKeyBytes, err := os.ReadFile(privateKeyPath)
-		if err != nil {
-			log.Fatal(err)
-		}
-		// 개인 키 파싱
-		block, _ := pem.Decode(privateKeyBytes)
-		if block == nil || block.Type != "PRIVATE KEY" {
-			log.Fatal("Failed to decode PEM block containing RSA private key")
-		}
-
-		key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		publicKeyBytes, err := os.ReadFile(publicKeyPath)
-		if err != nil {
-			log.Fatal(err)
-		}
-		block, _ = pem.Decode(publicKeyBytes)
-		pub, err := x509.ParsePKIXPublicKey(block.Bytes)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		jwtKey.PrivateKey = key
-		jwtKey.PublicKey = pub
-		jwtKey.Method = getSigingMethod()
-		logger.Info("initalized jwt")
+	privateKeyBytes, err := os.ReadFile(privateKeyPath)
+	if err != nil {
+		log.Fatal(err)
 	}
-}
+	// 개인 키 파싱
+	block, _ := pem.Decode(privateKeyBytes)
+	if block == nil || block.Type != "PRIVATE KEY" {
+		log.Fatal("Failed to decode PEM block containing RSA private key")
+	}
 
-func GetJwtKey() domain.JwtKey {
+	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	publicKeyBytes, err := os.ReadFile(publicKeyPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	block, _ = pem.Decode(publicKeyBytes)
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jwtKey.PrivateKey = key
+	jwtKey.PublicKey = pub
+	jwtKey.Method = getSigingMethod()
+	logger.Info("initalized jwt")
 	return jwtKey
 }
 

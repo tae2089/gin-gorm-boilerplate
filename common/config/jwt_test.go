@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoadJwtKey(t *testing.T) {
-	jwtKey := config.GetJwtKey()
+	jwtKey := config.NewJwtKey()
 	if jwtKey.PrivateKey == nil && jwtKey.PublicKey == nil && jwtKey.Method == nil {
 		t.Fail()
 	}

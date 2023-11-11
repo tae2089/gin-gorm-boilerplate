@@ -8,8 +8,9 @@ import (
 )
 
 func TestCreateAccessToken(t *testing.T) {
-	config.LoadingDefaultConfigOptions()
-	token, err := util.CreateAccessToken("abc", false)
+	jwtKey := config.NewJwtKey()
+	jwtUtil := util.NewJwtUtil(jwtKey)
+	token, err := jwtUtil.CreateAccessToken("abc", false)
 	if err != nil {
 		t.Errorf("CreateAccessToken() error = %v", err)
 		return
@@ -19,13 +20,14 @@ func TestCreateAccessToken(t *testing.T) {
 }
 
 func TestIsAuthorized(t *testing.T) {
-	config.LoadingDefaultConfigOptions()
-	token, err := util.CreateAccessToken("abc", false)
+	jwtKey := config.NewJwtKey()
+	jwtUtil := util.NewJwtUtil(jwtKey)
+	token, err := jwtUtil.CreateAccessToken("abc", false)
 	if err != nil {
 		t.Errorf("CreateAccessToken() error = %v", err)
 		return
 	}
-	result, err := util.IsAuthorized(token.AccessToken)
+	result, err := jwtUtil.IsAuthorized(token.AccessToken)
 	if err != nil {
 		t.Errorf("IsAuthorized() error = %v", err)
 		return
@@ -34,13 +36,14 @@ func TestIsAuthorized(t *testing.T) {
 }
 
 func TestExtractFieldFromToken(t *testing.T) {
-	config.LoadingDefaultConfigOptions()
-	token, err := util.CreateAccessToken("abc", false)
+	jwtKey := config.NewJwtKey()
+	jwtUtil := util.NewJwtUtil(jwtKey)
+	token, err := jwtUtil.CreateAccessToken("abc", false)
 	if err != nil {
 		t.Errorf("CreateAccessToken() error = %v", err)
 		return
 	}
-	result, err := util.ExtractFieldFromToken("id", token.AccessToken)
+	result, err := jwtUtil.ExtractFieldFromToken("id", token.AccessToken)
 	if err != nil {
 		t.Errorf("ExtractFieldFromToken() error = %v", err)
 		return

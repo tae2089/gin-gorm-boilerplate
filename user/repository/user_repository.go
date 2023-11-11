@@ -1,48 +1,60 @@
 package repository
 
 import (
-	"github.com/tae2089/gin-boilerplate/common/config"
 	domain "github.com/tae2089/gin-boilerplate/user/model"
 	"gorm.io/gorm"
 )
 
-func Begin() (tx *gorm.DB) {
-	client := config.GetDB()
-	tx = client.Begin()
+type UserRepository interface {
+	Begin() (tx *gorm.DB)
+	Save(user *domain.User) error
+	FindById(id uint) (*domain.User, error)
+	FindByEmail(email string) (*domain.User, error)
+	FindAll() ([]*domain.User, error)
+	Delete(userId string) error
+}
+
+func NewUserRepository(client *gorm.DB) UserRepository {
+	return &userRepositoryImpl{
+		client,
+	}
+}
+
+type userRepositoryImpl struct {
+	client *gorm.DB
+}
+
+func (u *userRepositoryImpl) Begin() (tx *gorm.DB) {
+	tx = u.client.Begin()
 	return tx
 }
 
-func Save(user *domain.User) error {
-	client := config.GetDB()
-	return client.Save(user).Error
+func (u *userRepositoryImpl) Save(user *domain.User) error {
+	return u.client.Save(user).Error
 }
 
-func FindByEmail(email string) (*domain.User, error) {
+func (u *userRepositoryImpl) FindByEmail(email string) (*domain.User, error) {
 	var user domain.User
-	client := config.GetDB()
-	err := client.Where("email =?", email).First(&user).Error
+	err := u.client.Where("email =?", email).First(&user).Error
 	return &user, err
 }
 
-func FindById(id uint) (*domain.User, error) {
+func (u *userRepositoryImpl) FindById(id uint) (*domain.User, error) {
 	var user domain.User
-	client := config.GetDB()
-	if err := client.Where("id =?", id).First(&user).Error; err != nil {
+	if err := u.client.Where("id =?", id).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func FindAll() ([]*domain.User, error) {
+func (u *userRepositoryImpl) FindAll() ([]*domain.User, error) {
 	var users []*domain.User
-	client := config.GetDB()
-	if err := client.Find(&users).Error; err != nil {
+	if err := u.client.Find(&users).Error; err != nil {
 		return nil, err
 	}
 	return users, nil
 }
 
-func Delete(user *domain.User) error {
-	client := config.GetDB()
-	return client.Delete(user).Error
+func (u *userRepositoryImpl) Delete(userId string) error {
+	return u.client.Where("id =?", userId).Delete(&domain.User{}).Error
 }

@@ -9,25 +9,27 @@ import (
 	"github.com/tae2089/gin-boilerplate/common/util"
 )
 
-func CheckAccessToken(c *gin.Context) {
-	access_cookie, err := c.Cookie("access_token")
-	if errors.Is(err, http.ErrNoCookie) {
-		logger.Error(err)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized API Call",
-		})
-		c.Abort()
-		return
+func CheckAccessToken(jwtUtil util.JwtUtil) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		access_cookie, err := c.Cookie("access_token")
+		if errors.Is(err, http.ErrNoCookie) {
+			logger.Error(err)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": "Unauthorized API Call",
+			})
+			c.Abort()
+			return
+		}
+		userID, err := jwtUtil.ExtractFieldFromToken("id", access_cookie)
+		if err != nil {
+			logger.Error(err)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": "Unauthorized API Call",
+			})
+			c.Abort()
+			return
+		}
+		c.Set("user_id", userID)
+		c.Next()
 	}
-	userID, err := util.ExtractFieldFromToken("id", access_cookie)
-	if err != nil {
-		logger.Error(err)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Unauthorized API Call",
-		})
-		c.Abort()
-		return
-	}
-	c.Set("user_id", userID)
-	c.Next()
 }

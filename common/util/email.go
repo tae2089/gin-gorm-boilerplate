@@ -2,42 +2,50 @@ package util
 
 import (
 	"github.com/tae2089/bob-logging/logger"
-	"github.com/tae2089/gin-boilerplate/common/config"
 	"github.com/tae2089/gin-boilerplate/common/domain"
 	"gopkg.in/gomail.v2"
 )
 
-func SendTextPlainMail(to string, subject string, body string) error {
-	err := sendMail([]string{to}, subject, domain.TextPlain, body)
+type EmailUtil interface{}
+
+type emailUtil struct {
+	domain.EmailConfig
+}
+
+func NewEmailUtil(emailConfig domain.EmailConfig) EmailUtil {
+	return &emailUtil{emailConfig}
+}
+
+func (e *emailUtil) SendTextPlainMail(to string, subject string, body string) error {
+	err := e.sendMail([]string{to}, subject, domain.TextPlain, body)
 	return err
 }
 
-func SendHtmlMail(To string, subject string, body string, attaches ...string) error {
-	err := sendMail([]string{To}, subject, domain.HTML, body, attaches...)
+func (e *emailUtil) SendHtmlMail(To string, subject string, body string, attaches ...string) error {
+	err := e.sendMail([]string{To}, subject, domain.HTML, body, attaches...)
 	return err
 }
 
-func SendBulkTextMail(To []string, subject string, body string, attaches ...string) error {
-	err := sendMail(To, subject, domain.TextPlain, body, attaches...)
+func (e *emailUtil) SendBulkTextMail(To []string, subject string, body string, attaches ...string) error {
+	err := e.sendMail(To, subject, domain.TextPlain, body, attaches...)
 	return err
 }
 
-func SendBulkHTMLMail(To []string, subject string, body string, attaches ...string) error {
-	err := sendMail(To, subject, domain.HTML, body, attaches...)
+func (e *emailUtil) SendBulkHTMLMail(To []string, subject string, body string, attaches ...string) error {
+	err := e.sendMail(To, subject, domain.HTML, body, attaches...)
 	return err
 }
 
-func sendMail(To []string, subject string, bodyType domain.BodyType, body string, attaches ...string) error {
-	emailConfig := config.GetEmailConfig()
-	m := generateMessage(emailConfig.From, To, subject, bodyType, body, attaches...)
-	if err := emailConfig.Dialer.DialAndSend(m); err != nil {
+func (e *emailUtil) sendMail(To []string, subject string, bodyType domain.BodyType, body string, attaches ...string) error {
+	m := e.generateMessage(e.From, To, subject, bodyType, body, attaches...)
+	if err := e.Dialer.DialAndSend(m); err != nil {
 		logger.Error(err)
 		return err
 	}
 	return nil
 }
 
-func generateMessage(from string, To []string, subject string, bodyType domain.BodyType, body string, attaches ...string) *gomail.Message {
+func (e *emailUtil) generateMessage(from string, To []string, subject string, bodyType domain.BodyType, body string, attaches ...string) *gomail.Message {
 	m := gomail.NewMessage()
 	m.SetHeader("From", from)
 	m.SetHeader("To", To...)

@@ -18,14 +18,12 @@ import (
 
 func main() {
 	e := gin.Default()
-	config.LoadingConfigOptions(
-		config.LoadDBConfig(),
-		config.LoadJwtConfig(),
-		// config.LoadEmailConfig(),
-	)
-	db := config.GetDB()
+
+	db := config.NewDBConfig()
+	jwtKey := config.NewJwtKey()
+
 	db.AutoMigrate(&model.User{})
-	router.SetupRouter(e, db)
+	router.SetupRouter(e, db, jwtKey)
 	// e.Run()
 
 	cors.DefaultConfig()
@@ -40,7 +38,7 @@ func main() {
 	}))
 
 	srv := &http.Server{
-		Addr:    ":8081",
+		Addr:    ":8080",
 		Handler: e,
 	}
 
