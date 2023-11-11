@@ -28,8 +28,8 @@ services:
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
       EMAIL_HOST: ${EMAIL_HOST}
       EMAIL_PORT: ${EMAIL_PORT}
-      PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
-      PUBLIC_KEY_PATH: ${PUBLIC_KEY_PATH}
+      PRIVATE_KEY_PATH: /app/secrets/jwt
+      PUBLIC_KEY_PATH: /app/secrets/jwt.pub
       JWT_SIGNING_METHOD: ${JWT_SIGNING_METHOD}
     volumes:
       - ${PWD}/build/cd/postgres-data:/var/lib/postgresql/data
