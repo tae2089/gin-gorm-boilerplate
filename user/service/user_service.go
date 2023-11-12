@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/tae2089/bob-logging/logger"
+	"github.com/tae2089/gin-boilerplate/common/util"
 	"github.com/tae2089/gin-boilerplate/user/dto"
 	"github.com/tae2089/gin-boilerplate/user/model"
 	"github.com/tae2089/gin-boilerplate/user/repository"
@@ -13,16 +14,18 @@ import (
 
 type UserService interface {
 	Join(requestJoin *dto.RequestJoin) (string, error)
-	Login(requestLogin *dto.RequestLogin) (string, error)
+	Login(requestLogin *dto.RequestLogin) (dto.ResponseLogin, error)
 }
 
 type userServiceImpl struct {
 	userRepository repository.UserRepository
+	jwtUtil        util.JwtUtil
 }
 
-func NewUserService(userRepository repository.UserRepository) UserService {
+func NewUserService(userRepository repository.UserRepository, jwtUtil util.JwtUtil) UserService {
 	return &userServiceImpl{
 		userRepository: userRepository,
+		jwtUtil:        jwtUtil,
 	}
 }
 
@@ -46,15 +49,17 @@ func (u *userServiceImpl) Join(requestJoin *dto.RequestJoin) (string, error) {
 	return "success", nil
 }
 
-func (s *userServiceImpl) Login(requestLogin *dto.RequestLogin) (string, error) {
+func (s *userServiceImpl) Login(requestLogin *dto.RequestLogin) (dto.ResponseLogin, error) {
 	user, err := s.userRepository.FindByEmail(requestLogin.Email)
+	var responseLogin dto.ResponseLogin
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return "", errors.New("user not found")
+		return responseLogin, errors.New("user not found")
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(requestLogin.Password))
 	if err != nil {
 		logger.Error(err)
-		return "", errors.New("wrong password")
+		return responseLogin, errors.New("wrong password")
 	}
-	return user.ID.String(), nil
+	responseLogin.JwtToken, err = s.jwtUtil.CreateAccessToken(user.ID.String(), true)
+	return responseLogin, nil
 }

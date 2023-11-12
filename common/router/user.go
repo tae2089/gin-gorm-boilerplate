@@ -11,8 +11,8 @@ import (
 
 func newUserRouter(userRouter *gin.RouterGroup, db *gorm.DB, jwtUtil util.JwtUtil) {
 	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
-	userHandler := handler.NewUserHandler(userService, jwtUtil)
+	userService := service.NewUserService(userRepository, jwtUtil)
+	userHandler := handler.NewUserHandler(userService)
 	userRouter.POST("/join", userHandler.Join)
 	userRouter.POST("/login", userHandler.Login)
 }

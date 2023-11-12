@@ -12,9 +12,8 @@ func SetupRouter(e *gin.Engine, db *gorm.DB, jwtKey domain.JwtKey) {
 
 	jwtUtil := util.NewJwtUtil(jwtKey)
 
-	// config.LoadEnv()
 	healthRouter := e.Group("/")
-	healthRouter.Use(middleware.CheckAccessToken(nil))
+	healthRouter.Use(middleware.CheckAccessToken(jwtUtil))
 	newHealthRouter(healthRouter)
 
 	userRouter := e.Group("/user")
