@@ -6,7 +6,12 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-type EmailUtil interface{}
+type EmailUtil interface {
+	SendTextPlainMail(to string, subject string, body string) error
+	SendHtmlMail(To string, subject string, body string, attaches ...string) error
+	SendBulkTextMail(To []string, subject string, body string, attaches ...string) error
+	SendBulkHTMLMail(To []string, subject string, body string, attaches ...string) error
+}
 
 type emailUtil struct {
 	domain.EmailConfig
