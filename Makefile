@@ -3,7 +3,7 @@ IMG_NAME = tae2089/gin-bolier
 IMG_TAG = latest
 
 image-build:
-	docker build -t ${IMG_NAME}:${IMG_TAG} -f build/ci/Dockerfile .
+	docker build -t ${IMG_NAME}:${IMG_TAG} -f build/ci/Dockerfile . --build-arg GOPATH=${GOPATH}
 
 docker-compose-run:
 	docker compose -f build/cd/docker-compose.yml --env-file .env up -d
