@@ -25,9 +25,6 @@ func main() {
 	db.AutoMigrate(&model.User{})
 	router.SetupRouter(e, db, jwtKey)
 	// e.Run()
-
-	cors.DefaultConfig()
-
 	e.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"*"},
