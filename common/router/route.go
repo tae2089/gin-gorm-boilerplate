@@ -18,4 +18,8 @@ func SetupRouter(e *gin.Engine, db *gorm.DB, jwtKey domain.JwtKey) {
 
 	userRouter := e.Group("/user")
 	newUserRouter(userRouter, db, jwtUtil)
+
+	oauthRouter := e.Group("/oauth")
+	newOauthRouter(oauthRouter)
+
 }
