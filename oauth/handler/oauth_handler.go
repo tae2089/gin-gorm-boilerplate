@@ -20,12 +20,12 @@ func NewOauthHandler(githubService oauth.OauthService) *OauthHandler {
 
 func (o *OauthHandler) GithubLoginCallback(c *gin.Context) {
 	code := c.Query("code")
-	accessToken, err := o.githubService.GetAccessToken(code)
+	oauthToken, err := o.githubService.GetAccessToken(code)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	userInfo, err := o.githubService.GetUserInfo(accessToken)
+	userInfo, err := o.githubService.GetUserInfo(oauthToken)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
