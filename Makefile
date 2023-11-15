@@ -16,3 +16,6 @@ docker-compose-down:
 
 postgresql-run:
 	docker compose -f build/cd/postgres-compose.yml --env-file .env up -d
+
+postgresql-down:
+	docker compose -f build/cd/postgres-compose.yml --env-file .env down
