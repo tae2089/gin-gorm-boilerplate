@@ -8,8 +8,12 @@ import (
 
 func newOauthRouter(oauthRouter *gin.RouterGroup) {
 	githubOauthService := service.NewGithubOauthService()
-	oauthHandler := handler.NewOauthHandler(githubOauthService)
+	googleOauthService := service.NewGoogleOauthService()
+	oauthHandler := handler.NewOauthHandler(githubOauthService, googleOauthService)
 	if githubOauthService != nil {
 		oauthRouter.GET("/github/login/callback", oauthHandler.GithubLoginCallback)
+	}
+	if googleOauthService != nil {
+		oauthRouter.GET("/google/login/callback", oauthHandler.GoogleLoginCallback)
 	}
 }
