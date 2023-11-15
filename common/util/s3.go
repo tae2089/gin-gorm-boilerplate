@@ -9,7 +9,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/tae2089/gin-boilerplate/common/config"
 )
 
@@ -35,7 +35,7 @@ func (s *S3StorageUtil) UploadFileToCloud(file io.Reader, fileName string) (stri
 	if err != nil {
 		panic(err)
 	}
-	uuid := uuid.NewV4()
+	uuid := uuid.New()
 	ext := filepath.Ext(fileName)
 	_, err = s.s3Client.PutObject(context.Background(), &s3.PutObjectInput{
 		Key:    aws.String(fmt.Sprintf("%s/%s%s", date, uuid.String(), ext)),
