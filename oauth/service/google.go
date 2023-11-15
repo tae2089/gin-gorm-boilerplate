@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
 	"io"
 
+	"github.com/tae2089/bob-logging/logger"
 	"github.com/tae2089/gin-boilerplate/common/config"
 	"golang.org/x/oauth2"
 )
@@ -14,10 +16,11 @@ type GoogleOauth struct {
 
 func NewGoogleOauthService() OauthService {
 	googleOauthConfig := config.GetGoogleConfig()
-	if googleOauthConfig.ClientID == "" || googleOauthConfig.ClientSecret == "" {
+	if googleOauthConfig.ClientID == "" || googleOauthConfig.ClientSecret == "" || googleOauthConfig.RedirectURL == "" {
+		logger.Error(errors.New("google oauth config error"))
 		return nil
 	}
-	return &GithubOauth{
+	return &GoogleOauth{
 		googleOauthConfig,
 	}
 }
@@ -39,7 +42,6 @@ func (g *GoogleOauth) GetUserInfo(token *oauth2.Token) (string, error) {
 	}
 	// Read the response as a byte slice
 	respbody, _ := io.ReadAll(resp.Body)
-
 	// Convert byte slice to string and return
 	return string(respbody), nil
 }
