@@ -5,6 +5,7 @@ import "golang.org/x/oauth2"
 type OauthService interface {
 	GetAccessToken(code string) (*oauth2.Token, error)
 	GetUserInfo(token *oauth2.Token) (string, error)
+	GetRedirectURL() (string, string)
 }
 
 const (
