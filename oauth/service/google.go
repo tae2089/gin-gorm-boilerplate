@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"io"
 
@@ -23,6 +25,14 @@ func NewGoogleOauthService() OauthService {
 	return &GoogleOauth{
 		googleOauthConfig,
 	}
+}
+
+func (g *GoogleOauth) GetRedirectURL() (redirectURL string, state string) {
+	b := make([]byte, 16)
+	_, _ = rand.Read(b)
+	state = base64.URLEncoding.EncodeToString(b)
+	redirectURL = g.AuthCodeURL(state)
+	return redirectURL, state
 }
 
 func (g *GoogleOauth) GetAccessToken(code string) (*oauth2.Token, error) {
