@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tae2089/gin-boilerplate/oauth/domain"
@@ -18,6 +19,21 @@ func NewOauthHandler(githubService, googleService oauth.OauthService) *OauthHand
 		githubService: githubService,
 		googleService: googleService,
 	}
+}
+
+func (o *OauthHandler) RootLoginPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "oauth.html", gin.H{})
+}
+
+func (o *OauthHandler) GithubLogin(c *gin.Context) {
+	redirectURL, _ := o.githubService.GetRedirectURL()
+	c.Redirect(http.StatusTemporaryRedirect, redirectURL)
+}
+
+func (o *OauthHandler) GoogleLogin(c *gin.Context) {
+	redirectURL, state := o.googleService.GetRedirectURL()
+	c.SetCookie("state", state, 3600, "/", "localhost", false, true)
+	c.Redirect(301, redirectURL)
 }
 
 func (o *OauthHandler) GithubLoginCallback(c *gin.Context) {
@@ -39,6 +55,13 @@ func (o *OauthHandler) GithubLoginCallback(c *gin.Context) {
 }
 
 func (o *OauthHandler) GoogleLoginCallback(c *gin.Context) {
+	// if you don't want to use state, please comment 59-64 line
+	stateCookie, err := c.Cookie("state")
+	stateForm := c.Request.FormValue("state")
+	if stateCookie != stateForm {
+		c.JSON(400, gin.H{"error": "state not match"})
+		return
+	}
 	code := c.Query("code")
 	oauthToken, err := o.googleService.GetAccessToken(code)
 	if err != nil {
