@@ -10,10 +10,13 @@ func newOauthRouter(oauthRouter *gin.RouterGroup) {
 	githubOauthService := service.NewGithubOauthService()
 	googleOauthService := service.NewGoogleOauthService()
 	oauthHandler := handler.NewOauthHandler(githubOauthService, googleOauthService)
+	oauthRouter.GET("/", oauthHandler.RootLoginPage)
 	if githubOauthService != nil {
-		oauthRouter.GET("/github/login/callback", oauthHandler.GithubLoginCallback)
+		oauthRouter.GET("/github", oauthHandler.GithubLogin)
+		oauthRouter.GET("/github/callback", oauthHandler.GithubLoginCallback)
 	}
 	if googleOauthService != nil {
-		oauthRouter.GET("/google/login/callback", oauthHandler.GoogleLoginCallback)
+		oauthRouter.GET("/google", oauthHandler.GoogleLogin)
+		oauthRouter.GET("/google/callback", oauthHandler.GoogleLoginCallback)
 	}
 }
