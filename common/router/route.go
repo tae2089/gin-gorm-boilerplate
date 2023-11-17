@@ -10,6 +10,8 @@ import (
 
 func SetupRouter(e *gin.Engine, db *gorm.DB, jwtKey domain.JwtKey) {
 
+	e.LoadHTMLGlob("templates/*")
+
 	jwtUtil := util.NewJwtUtil(jwtKey)
 
 	healthRouter := e.Group("/")
