@@ -27,6 +27,7 @@ func (j *jwtUtil) CreateAccessToken(id string, usingRefreshToken bool) (jwtToken
 	refreshToken := ""
 	// A usual scenario is to set the expiration time relative to the current time
 	claims := j.getToken(false, id)
+	claims.Subject = "access_token"
 	token := jwt.NewWithClaims(jwt.SigningMethodEdDSA, claims)
 	accessToken, err := token.SignedString(j.PrivateKey)
 	if err != nil {
@@ -35,6 +36,7 @@ func (j *jwtUtil) CreateAccessToken(id string, usingRefreshToken bool) (jwtToken
 
 	if usingRefreshToken {
 		refreshClaims := j.getToken(true, id)
+		refreshClaims.Subject = "refresh_token"
 		token := jwt.NewWithClaims(jwt.SigningMethodEdDSA, refreshClaims)
 		refreshToken, err = token.SignedString(j.PrivateKey)
 		if err != nil {
@@ -61,8 +63,6 @@ func (j *jwtUtil) getToken(isRefresh bool, userID string) domain.JwtCustomClaims
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "tae2089",
-			Subject:   "login",
-			Audience:  []string{"tae2089"},
 		},
 	}
 	return claims
