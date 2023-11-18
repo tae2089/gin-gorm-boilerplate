@@ -40,7 +40,11 @@ func SendError(err error) {
 
 func UseSlackProvider() SenderProvider {
 	httpClient := http.Client{}
-	return NewSlackProvider(httpClient, os.Getenv("SLACK_WEBHOOK_URL"))
+	slackWebookURL := os.Getenv("SLACK_WEBHOOK_URL")
+	if slackWebookURL == "" {
+		panic("SLACK_WEBHOOK_URL is not set")
+	}
+	return NewSlackProvider(httpClient, slackWebookURL)
 }
 
 func UseLoggerProvider() SenderProvider {
