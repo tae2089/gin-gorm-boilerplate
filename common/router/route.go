@@ -5,13 +5,15 @@ import (
 	"github.com/tae2089/gin-boilerplate/common/domain"
 	"github.com/tae2089/gin-boilerplate/common/middleware"
 	"github.com/tae2089/gin-boilerplate/common/util"
+	"github.com/tae2089/gin-boilerplate/notification"
+	"github.com/tae2089/gin-boilerplate/user/repository"
 	"gorm.io/gorm"
 )
 
 func SetupRouter(e *gin.Engine, db *gorm.DB, jwtKey domain.JwtKey) {
 
 	e.LoadHTMLGlob("templates/*")
-
+	e.Use(middleware.ErrorHandler(notification.GetErrorChan()))
 	jwtUtil := util.NewJwtUtil(jwtKey)
 
 	healthRouter := e.Group("/")
@@ -19,9 +21,10 @@ func SetupRouter(e *gin.Engine, db *gorm.DB, jwtKey domain.JwtKey) {
 	newHealthRouter(healthRouter)
 
 	userRouter := e.Group("/user")
-	newUserRouter(userRouter, db, jwtUtil)
+	userRepository := repository.NewUserRepository(db)
+	newUserRouter(userRouter, userRepository, jwtUtil)
 
 	oauthRouter := e.Group("/oauth")
-	newOauthRouter(oauthRouter)
+	newOauthRouter(oauthRouter, jwtUtil, userRepository)
 
 }
