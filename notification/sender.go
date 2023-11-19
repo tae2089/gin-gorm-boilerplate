@@ -30,8 +30,8 @@ func Listen(providers ...SenderProviderOption) {
 	}
 }
 
-func GetErrorChan() chan error {
-	return errorChan
+func GetErrorChan() *chan error {
+	return &errorChan
 }
 
 func SendError(err error) {
