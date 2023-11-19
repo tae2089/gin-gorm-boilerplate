@@ -16,7 +16,7 @@ type GoogleOauth struct {
 	oauth2.Config
 }
 
-func NewGoogleOauthService() OauthService {
+func NewGoogleOauthProvider() OauthProvider {
 	googleOauthConfig := config.GetGoogleConfig()
 	if googleOauthConfig.ClientID == "" || googleOauthConfig.ClientSecret == "" || googleOauthConfig.RedirectURL == "" {
 		logger.Error(errors.New("google oauth config error"))
@@ -43,15 +43,15 @@ func (g *GoogleOauth) GetAccessToken(code string) (*oauth2.Token, error) {
 	return token, nil
 }
 
-func (g *GoogleOauth) GetUserInfo(token *oauth2.Token) (string, error) {
+func (g *GoogleOauth) GetUserInfo(token *oauth2.Token) ([]byte, error) {
 
 	client := g.Client(context.Background(), token)
 	resp, err := client.Get(OAUTH_GOOGLE_URL + token.AccessToken)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	// Read the response as a byte slice
 	respbody, _ := io.ReadAll(resp.Body)
 	// Convert byte slice to string and return
-	return string(respbody), nil
+	return respbody, nil
 }

@@ -14,7 +14,7 @@ type GithubOauth struct {
 	oauth2.Config
 }
 
-func NewGithubOauthService() OauthService {
+func NewGithubOauthProvider() OauthProvider {
 	githubOauthConfig := config.GetGithubConfig()
 	if githubOauthConfig.ClientID == "" || githubOauthConfig.ClientSecret == "" {
 		return nil
@@ -40,16 +40,14 @@ func (g *GithubOauth) GetAccessToken(code string) (*oauth2.Token, error) {
 	return token, nil
 }
 
-func (g *GithubOauth) GetUserInfo(token *oauth2.Token) (string, error) {
+func (g *GithubOauth) GetUserInfo(token *oauth2.Token) ([]byte, error) {
 
 	client := g.Client(context.Background(), token)
 	resp, err := client.Get(OAUTH_GITHUB_URL)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	// Read the response as a byte slice
 	respbody, _ := io.ReadAll(resp.Body)
-
-	// Convert byte slice to string and return
-	return string(respbody), nil
+	return respbody, nil
 }
