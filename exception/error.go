@@ -6,7 +6,7 @@ type ErrorCode string
 
 const (
 	SERVER_ERROR  ErrorCode = "S001"
-	INVAILD_ERROR ErrorCode = "E001"
+	INVALID_ERROR ErrorCode = "E001"
 )
 
 type CustomError struct {
@@ -18,13 +18,13 @@ type CustomError struct {
 func (e CustomError) Error() string {
 	b, err := json.Marshal(e)
 	if err != nil {
-		return ""
+		return err.Error()
 	}
 	return string(b)
 }
 
-func InvaildError() CustomError {
-	return createError(400, INVAILD_ERROR)
+func InvalidError() CustomError {
+	return createError(400, INVALID_ERROR)
 }
 
 func NotFoundError(errorCode ErrorCode) CustomError {
@@ -45,8 +45,11 @@ func createError(statucCode int, errorCode ErrorCode) CustomError {
 
 func (e ErrorCode) getMessage() string {
 	switch e {
-	case INVAILD_ERROR:
-		return "invaild error"
+	case SERVER_ERROR:
+		return "server internal error"
+	case INVALID_ERROR:
+		return "invalid error"
+	default:
+		return "Unknown error - Please contact support"
 	}
-	return ""
 }
