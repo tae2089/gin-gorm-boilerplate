@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tae2089/gin-boilerplate/common/config"
 	"github.com/tae2089/gin-boilerplate/common/router"
@@ -18,24 +17,13 @@ import (
 )
 
 func main() {
-	e := gin.Default()
-
+	e := gin.New()
 	db := config.NewDBConfig()
 	jwtKey := config.NewJwtKey()
-
+	gin.SetMode(gin.ReleaseMode)
 	db.AutoMigrate(&model.User{})
+	go notification.Listen(notification.UseLoggerProvider)
 	router.SetupRouter(e, db, jwtKey)
-	notification.Listen(notification.UseLoggerProvider)
-	// e.Run()
-	e.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"*"},
-		AllowHeaders:     []string{"*"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
-
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: e,
