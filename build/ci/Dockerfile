@@ -11,6 +11,7 @@ RUN --mount=type=bind,target=. \
     
 FROM scratch
 COPY --from=build /bin/main /bin/main
+COPY ./templates /templates
 COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 ENV TZ=Asia/Seoul
