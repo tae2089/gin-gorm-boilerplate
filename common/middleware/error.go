@@ -15,8 +15,7 @@ func ErrorHandler(errorEventChanel *chan error) gin.HandlerFunc {
 			case exception.CustomError:
 				c.AbortWithStatusJSON(e.StatusCode, e)
 			default:
-				*errorEventChanel <- err
-				c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]string{"message": "Service Unavailable"})
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Service Unavailable"})
 			}
 		}
 	}
