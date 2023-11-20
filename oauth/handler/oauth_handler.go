@@ -36,7 +36,7 @@ func (o *OauthHandler) GithubLoginCallback(c *gin.Context) {
 	code := c.Query("code")
 	token, err := o.oauthService.GithubLoginCallback(code)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "server internal error"})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	c.SetCookie("access_token", token.AccessToken, 3600, "/", "localhost", false, true)
@@ -57,7 +57,7 @@ func (o *OauthHandler) GoogleLoginCallback(c *gin.Context) {
 	code := c.Query("code")
 	token, err := o.oauthService.GoogleLoginCallback(code)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "server internal error"})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	c.SetCookie("access_token", token.AccessToken, 3600, "/", "localhost", false, true)
