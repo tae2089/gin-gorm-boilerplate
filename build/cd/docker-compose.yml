@@ -31,6 +31,11 @@ services:
       PRIVATE_KEY_PATH: /app/secrets/jwt
       PUBLIC_KEY_PATH: /app/secrets/jwt.pub
       JWT_SIGNING_METHOD: ${JWT_SIGNING_METHOD}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URL: ${GOOGLE_REDIRECT_URL}
     volumes:
       - ${PWD}/build/cd/postgres-data:/var/lib/postgresql/data
       - ${PWD}/jwt:/app/secrets/jwt
