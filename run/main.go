@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
+	"github.com/tae2089/gin-boilerplate/common/cache"
 	"github.com/tae2089/gin-boilerplate/common/config"
 	"github.com/tae2089/gin-boilerplate/common/router"
 	"github.com/tae2089/gin-boilerplate/notification"
@@ -22,8 +24,13 @@ func main() {
 	jwtKey := config.NewJwtKey()
 	gin.SetMode(gin.ReleaseMode)
 	db.AutoMigrate(&model.User{})
+	redisStore := cache.NewRedisStore(redis.NewClient(&redis.Options{
+		Network: "tcp",
+		Addr:    "127.0.0.1:6379",
+	}))
+
 	go notification.Listen(notification.UseLoggerProvider)
-	router.SetupRouter(e, db, jwtKey)
+	router.SetupRouter(e, db, jwtKey, redisStore)
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: e,

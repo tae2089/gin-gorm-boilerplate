@@ -3,6 +3,7 @@ package router
 import (
 	"time"
 
+	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tae2089/gin-boilerplate/common/domain"
@@ -13,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupRouter(e *gin.Engine, db *gorm.DB, jwtKey domain.JwtKey) {
+func SetupRouter(e *gin.Engine, db *gorm.DB, jwtKey domain.JwtKey, cacheStore persist.CacheStore) {
 
 	e.LoadHTMLGlob("templates/*")
 	useCorsMiddleware(e)
@@ -21,7 +22,7 @@ func SetupRouter(e *gin.Engine, db *gorm.DB, jwtKey domain.JwtKey) {
 	jwtUtil := util.NewJwtUtil(jwtKey)
 
 	healthRouter := e.Group("/")
-	newHealthRouter(healthRouter)
+	newHealthRouter(healthRouter, cacheStore)
 
 	userRouter := e.Group("/user")
 	userRepository := repository.NewUserRepository(db)
