@@ -3,3 +3,4 @@ postgres-data
 .env
 jwt
 jwt.pub
+dragonflydata
