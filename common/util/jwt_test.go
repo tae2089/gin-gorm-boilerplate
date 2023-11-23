@@ -1,52 +1,51 @@
-package util_test
+package util
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"github.com/tae2089/gin-boilerplate/common/config"
-	"github.com/tae2089/gin-boilerplate/common/util"
 )
 
-func TestCreateAccessToken(t *testing.T) {
-	jwtKey := config.NewJwtKey()
-	jwtUtil := util.NewJwtUtil(jwtKey)
-	token, err := jwtUtil.CreateAccessToken("abc", false)
-	if err != nil {
-		t.Errorf("CreateAccessToken() error = %v", err)
-		return
-	}
-	t.Log(token)
-
+type JwtUtilTestSuit struct {
+	suite.Suite
+	jwtUtil JwtUtil
 }
 
-func TestIsAuthorized(t *testing.T) {
-	jwtKey := config.NewJwtKey()
-	jwtUtil := util.NewJwtUtil(jwtKey)
-	token, err := jwtUtil.CreateAccessToken("abc", false)
-	if err != nil {
-		t.Errorf("CreateAccessToken() error = %v", err)
-		return
-	}
-	result, err := jwtUtil.IsAuthorized(token.AccessToken)
-	if err != nil {
-		t.Errorf("IsAuthorized() error = %v", err)
-		return
-	}
-	t.Log(result)
+func TestJwtUtilTestSuite(t *testing.T) {
+	suite.Run(t, new(JwtUtilTestSuit))
 }
 
-func TestExtractFieldFromToken(t *testing.T) {
+func (s *JwtUtilTestSuit) SetupTest() {
 	jwtKey := config.NewJwtKey()
-	jwtUtil := util.NewJwtUtil(jwtKey)
-	token, err := jwtUtil.CreateAccessToken("abc", false)
-	if err != nil {
-		t.Errorf("CreateAccessToken() error = %v", err)
-		return
-	}
-	result, err := jwtUtil.ExtractFieldFromToken("id", token.AccessToken)
-	if err != nil {
-		t.Errorf("ExtractFieldFromToken() error = %v", err)
-		return
-	}
-	t.Log(result)
+	jwtUtil := NewJwtUtil(jwtKey)
+	s.jwtUtil = jwtUtil
+}
+
+func (s *JwtUtilTestSuit) TestExmaple1() {
+	fmt.Println(1)
+}
+
+func (s *JwtUtilTestSuit) TestCreateAccessToken() {
+	token, err := s.jwtUtil.CreateAccessToken("abc", false)
+	assert.Nil(s.T(), err, nil)
+	assert.NotEmpty(s.T(), token.AccessToken)
+}
+
+func (s *JwtUtilTestSuit) TestIsAuthorized() {
+	token, err := s.jwtUtil.CreateAccessToken("abc", false)
+	assert.Nil(s.T(), err, nil)
+	result, err := s.jwtUtil.IsAuthorized(token.AccessToken)
+	assert.Nil(s.T(), err, nil)
+	assert.True(s.T(), result)
+}
+
+func (s *JwtUtilTestSuit) TestExtractFieldFromToken() {
+	token, err := s.jwtUtil.CreateAccessToken("abc", false)
+	assert.Nil(s.T(), err, nil)
+	result, err := s.jwtUtil.ExtractFieldFromToken("id", token.AccessToken)
+	assert.Nil(s.T(), err, nil)
+	assert.Equal(s.T(), "abc", result)
 }
