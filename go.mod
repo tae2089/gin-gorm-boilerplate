@@ -12,7 +12,7 @@ require (
 	github.com/google/uuid v1.4.0
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/stretchr/testify v1.8.4
-	github.com/tae2089/bob-logging v1.0.2
+	github.com/tae2089/bob-logging v1.0.3
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
