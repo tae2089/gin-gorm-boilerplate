@@ -7,13 +7,11 @@ import (
 	"os"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/tae2089/bob-logging/logger"
 	"github.com/tae2089/gin-boilerplate/common/domain"
 )
 
 func NewJwtKey() domain.JwtKey {
 	var jwtKey domain.JwtKey
-	logger.Info("initializing jwt")
 	privateKeyPath := os.Getenv("PRIVATE_KEY_PATH")
 	publicKeyPath := os.Getenv("PUBLIC_KEY_PATH")
 
@@ -45,7 +43,6 @@ func NewJwtKey() domain.JwtKey {
 	jwtKey.PrivateKey = key
 	jwtKey.PublicKey = pub
 	jwtKey.Method = getSigingMethod()
-	logger.Info("initalized jwt")
 	return jwtKey
 }
 

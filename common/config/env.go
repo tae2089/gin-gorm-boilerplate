@@ -8,13 +8,11 @@ import (
 	"runtime"
 
 	"github.com/joho/godotenv"
-	"github.com/tae2089/bob-logging/logger"
 )
 
 type ConfigOption func()
 
 func init() {
-	logger.Info("initializing config")
 	projectDir := getProjectDir()
 	fmt.Println("loading.env file")
 	if os.Getenv("APP_ENV") != "container" {
@@ -22,7 +20,6 @@ func init() {
 		if err != nil {
 			log.Panic("Error loading.env file")
 		}
-		logger.Info("initalized config")
 	}
 }
 
