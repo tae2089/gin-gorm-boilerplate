@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	bobgorm "github.com/tae2089/bob-logging/gorm"
 	"github.com/tae2089/bob-logging/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func NewDBConfig() *gorm.DB {
-	logger.Info("initializing database")
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Seoul",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_USER"),
@@ -19,11 +19,13 @@ func NewDBConfig() *gorm.DB {
 		os.Getenv("DB_PORT"),
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		PrepareStmt: true,
+		Logger:      bobgorm.New(logger.GetLogger()),
+	})
 
 	if err != nil {
 		panic(err)
 	}
-	logger.Info("initialized database")
 	return db
 }
