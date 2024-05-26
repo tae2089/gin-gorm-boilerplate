@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 
-	"github.com/tae2089/bob-logging/logger"
 	"github.com/tae2089/gin-boilerplate/common/util"
 	"github.com/tae2089/gin-boilerplate/user/dto"
 	"github.com/tae2089/gin-boilerplate/user/model"
@@ -30,11 +29,11 @@ func NewUserService(userRepository repository.UserRepository, jwtUtil util.JwtUt
 }
 
 func (u *userServiceImpl) Join(requestJoin *dto.RequestJoin) (string, error) {
-	user, err := u.userRepository.FindByEmail(requestJoin.Email)
+	_, err := u.userRepository.FindByEmail(requestJoin.Email)
 	if err == nil {
 		return "", errors.New("already exists user.")
 	}
-	user = &model.User{
+	user := &model.User{
 		Name:     requestJoin.Username,
 		Email:    requestJoin.Email,
 		Phone:    requestJoin.Phone,
@@ -43,8 +42,7 @@ func (u *userServiceImpl) Join(requestJoin *dto.RequestJoin) (string, error) {
 	}
 	err = u.userRepository.Save(user)
 	if err != nil {
-		logger.Error(err)
-		return "", errors.New("saving user failed.")
+		return "", errors.Join(err, errors.New("failed to save user"))
 	}
 	return "success", nil
 }
@@ -57,9 +55,11 @@ func (s *userServiceImpl) Login(requestLogin *dto.RequestLogin) (dto.ResponseLog
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(requestLogin.Password))
 	if err != nil {
-		logger.Error(err)
-		return responseLogin, errors.New("wrong password")
+		return responseLogin, errors.Join(err, errors.New("password is not correct"))
 	}
 	responseLogin.JwtToken, err = s.jwtUtil.CreateAccessToken(user.ID.String(), true)
+	if err != nil {
+		return responseLogin, errors.Join(err, errors.New("failed to create jwt token"))
+	}
 	return responseLogin, nil
 }
